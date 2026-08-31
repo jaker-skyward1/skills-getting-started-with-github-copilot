@@ -20,13 +20,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        const escapeHtml = (value) =>
+          String(value).replace(/[&<>"']/g, (ch) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[ch]));
+
         const participantsHTML =
           details.participants.length > 0
             ? `<ul class="participants-list">${details.participants
-                .map(
-                  (email) =>
-                    `<li><span>${email}</span><button class="delete-participant" data-activity="${name}" data-email="${email}" title="Unregister">🗑️</button></li>`
-                )
+                .map((email) => {
+                  const safeEmail = escapeHtml(email);
+                  const safeActivity = escapeHtml(name);
+                  return `<li><span>${safeEmail}</span><button type="button" class="delete-participant" data-activity="${safeActivity}" data-email="${safeEmail}" aria-label="Unregister ${safeEmail} from ${safeActivity}" title="Unregister">🗑️</button></li>`;
+                })
                 .join("")}</ul>`
             : `<p class="no-participants">No participants yet</p>`;
 
